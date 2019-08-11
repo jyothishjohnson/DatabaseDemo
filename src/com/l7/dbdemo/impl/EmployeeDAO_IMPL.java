@@ -6,14 +6,12 @@ import com.l7.dbdemo.utils.ConnectionManager;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Properties;
 
 public class EmployeeDAO_IMPL implements EmployeeDAO {
     private Properties queryProperties;
+
     public EmployeeDAO_IMPL() throws IOException {
         FileInputStream fileInputStream = new FileInputStream("query.properties");
         queryProperties = new Properties();
@@ -22,13 +20,13 @@ public class EmployeeDAO_IMPL implements EmployeeDAO {
     }
 
     @Override
-    public String addEmployee(EmployeeDTO employee) {
-
-        PreparedStatement stmt;
-        try (Connection connection = ConnectionManager.getInstance().getConnection()) {
+    public void addEmployee(EmployeeDTO employee) {
+        Connection connection = ConnectionManager.getInstance().getConnection();
+        CallableStatement stmt;
+        try {
             System.out.println(employee.getEmpName());
             String sql = queryProperties.getProperty("insertEmp");
-            stmt = connection.prepareStatement(sql);
+            stmt = connection.prepareCall(sql);
             stmt.setInt(1, employee.getEmpID());
             stmt.setString(2, employee.getEmpName());
             stmt.executeUpdate();
@@ -37,16 +35,15 @@ public class EmployeeDAO_IMPL implements EmployeeDAO {
         } catch (SQLException se) {
             System.out.println();
         }
-        return "Success adding: " + employee.getEmpName();
     }
 
     @Override
-    public String deleteEmployee(int empID) {
+    public void deleteEmployee(int empID) {
         Connection connection = ConnectionManager.getInstance().getConnection();
-        PreparedStatement stmt;
+        CallableStatement stmt;
         try {
             String sql = queryProperties.getProperty("deleteEmp");
-            stmt = connection.prepareStatement(sql);
+            stmt = connection.prepareCall(sql);
             stmt.setInt(1, empID);
             stmt.executeUpdate();
             stmt.close();
@@ -54,17 +51,16 @@ public class EmployeeDAO_IMPL implements EmployeeDAO {
             System.out.println("Error in creating the Statement");
         }
 
-        return "Success deleting employee with ID: " + empID;
     }
 
     @Override
     public void getAllEmployee() {
         Connection connection = ConnectionManager.getInstance().getConnection();
-        PreparedStatement stmt;
+        CallableStatement stmt;
         ResultSet rs;
         try {
             String sql = queryProperties.getProperty("getAllEmp");
-            stmt = connection.prepareStatement(sql);
+            stmt = connection.prepareCall(sql);
 
             rs = stmt.executeQuery();
             while (rs.next()) {
@@ -84,13 +80,15 @@ public class EmployeeDAO_IMPL implements EmployeeDAO {
     @Override
     public void getOneEmployee(int empID) {
         Connection connection = ConnectionManager.getInstance().getConnection();
-        PreparedStatement stmt;
+        CallableStatement stmt;
         ResultSet rs;
         try {
             String sql = queryProperties.getProperty("getOneEmp");
-            stmt = connection.prepareStatement(sql);
+            stmt = connection.prepareCall(sql);
+            System.out.println(empID);
             stmt.setInt(1, empID);
             rs = stmt.executeQuery();
+
             rs.next();
 
             int empId = rs.getInt("empId");
