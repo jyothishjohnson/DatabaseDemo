@@ -3,7 +3,6 @@ package com.l7.dbdemo.base;
 import com.l7.dbdemo.dto.EmployeeDTO;
 import com.l7.dbdemo.impl.EmployeeDAO_IMPL;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -14,7 +13,7 @@ public class EmployeeBaseProcessor {
         EmployeeDAO_IMPL employeeDAOImpl = null;
         try {
             employeeDAOImpl = new EmployeeDAO_IMPL();
-        } catch (IOException fe){
+        } catch (IOException fe) {
             System.out.println(fe.getMessage());
         }
         EmployeeDTO employeeDTO;
@@ -35,20 +34,28 @@ public class EmployeeBaseProcessor {
                     empName = sc.next();
                     employeeDTO.setEmpID(empId);
                     employeeDTO.setEmpName(empName);
-                    employeeDAOImpl.addEmployee(employeeDTO);
+                    if (employeeDAOImpl != null) {
+                        employeeDAOImpl.addEmployee(employeeDTO);
+                    }
                     break;
                 case 2:
                     System.out.println("Enter the empId");
                     empId = sc.nextInt();
-                    employeeDAOImpl.getOneEmployee(empId);
+                    if (employeeDAOImpl != null) {
+                        employeeDAOImpl.getOneEmployee(empId);
+                    }
                     break;
                 case 3:
-                    employeeDAOImpl.getAllEmployee();
+                    if (employeeDAOImpl != null) {
+                        employeeDAOImpl.getAllEmployee();
+                    }
                     break;
                 case 4:
                     System.out.println("Enter the empId");
                     empId = sc.nextInt();
-                    employeeDAOImpl.deleteEmployee(empId);
+                    if (employeeDAOImpl != null) {
+                        employeeDAOImpl.deleteEmployee(empId);
+                    }
                     break;
                 default:
                     System.out.println("Enter a valid choice");
